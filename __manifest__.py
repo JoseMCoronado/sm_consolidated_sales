@@ -17,7 +17,8 @@ Consolidated Sales report
         'data/ir_actions_act_window.xml',
         'data/ir_ui_menu.xml',
         'data/ir_actions_server.xml',
-        'data/ir_cron.xml'
+        'data/ir_cron.xml',
+        'data/ir_model_access.xml'
     ],
     'installable': True,
     'application': False,
