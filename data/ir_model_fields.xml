@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+    <record model="ir.model.fields" id="analysis_product">
+        <field name="field_description">Product</field>
+        <field name="name">x_product_id</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="relation">product.product</field>
+        <field name="ttype">many2one</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_uom">
+        <field name="field_description">Unit of Measure</field>
+        <field name="name">x_uom_id</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="relation">product.uom</field>
+        <field name="ttype">many2one</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_name">
+        <field name="field_description">Order Reference</field>
+        <field name="name">x_name</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="ttype">char</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_date">
+        <field name="field_description">Order Date</field>
+        <field name="name">x_date</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="ttype">datetime</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_state">
+        <field name="field_description">Order Status</field>
+        <field name="name">x_state</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="selection">[['draft', 'Quotation'], ['sent', 'Quotation Sent'], ['awaiting', 'Awaiting Approval'], ['sale', 'Sale Order'], ['done', 'Done'], ['cancel', 'Cancelled'], ['paid', 'Paid'], ['invoiced', 'Invoiced']]</field>
+        <field name="ttype">selection</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_partner">
+        <field name="field_description">Customer</field>
+        <field name="name">x_partner_id</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="relation">res.partner</field>
+        <field name="ttype">many2one</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_user">
+        <field name="field_description">Salesperson</field>
+        <field name="name">x_user_id</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="relation">res.users</field>
+        <field name="ttype">many2one</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_category">
+        <field name="field_description">Product Category</field>
+        <field name="name">x_categ_id</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="relation">product.category</field>
+        <field name="ttype">many2one</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_team">
+        <field name="field_description">Sales Team</field>
+        <field name="name">x_team_id</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="relation">crm.team</field>
+        <field name="ttype">many2one</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_product_template">
+        <field name="field_description">Product Template</field>
+        <field name="name">x_product_template_id</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="relation">product.template</field>
+        <field name="ttype">many2one</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_qty">
+        <field name="field_description">Quantity</field>
+        <field name="name">x_qty</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="ttype">float</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_total">
+        <field name="field_description">Total</field>
+        <field name="name">x_price_total</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="ttype">float</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_subtotal">
+        <field name="field_description">Subtotal</field>
+        <field name="name">x_price_subtotal</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="ttype">float</field>
+    </record>
+    <record model="ir.model.fields" id="analysis_count">
+        <field name="field_description">Line Count</field>
+        <field name="name">x_line_count</field>
+        <field name="model">x_consolidated_sales</field>
+        <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales" />
+        <field name="on_delete">set null</field>
+        <field name="selectable" eval="True"/>
+        <field name="state">manual</field>
+        <field name="store" eval="True"/>
+        <field name="readonly" eval="True"/>
+        <field name="ttype">float</field>
+    </record>
+  </data>
+</odoo>

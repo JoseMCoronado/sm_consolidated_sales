@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record model="ir.actions.server" id="action_consolidated_sales">
+    <field name="child_ids" eval="[(6, 0, [])]"/>
+    <field name="code"><![CDATA[
+model.env.cr.execute("""SELECT count(*) FROM pg_tables WHERE tablename ='%s'""" % (model._table))
+istable = model.env.cr.fetchall()
+validator = float(str(istable[0])[1])
+if validator > 0:
+    model.env.cr.execute("""DROP TABLE %s""" % (model._table))
+
+model.env.cr.execute("""
+            CREATE or replace VIEW %s AS (
+              SELECT MIN(id) as id,
+                virtual_table.product_id as x_product_id,
+                virtual_table.product_uom as x_uom_id,
+                virtual_table.name as x_name,
+                virtual_table.date as x_date,
+                virtual_table.state as x_state,
+                virtual_table.partner_id as x_partner_id,
+                virtual_table.user_id as x_user_id,
+                virtual_table.categ_id as x_categ_id,
+                virtual_table.team_id as x_team_id,
+                virtual_table.product_template_id as x_product_template_id,
+                SUM(virtual_table.product_uom_qty) as x_qty,
+                SUM(virtual_table.price_total) as x_price_total,
+                SUM(virtual_table.price_subtotal) as x_price_subtotal,
+                SUM(virtual_table.nbr) as x_line_count
+
+                FROM
+                (
+                (
+                SELECT min(l.id) as id,
+                    l.product_id as product_id,
+                    t.uom_id as product_uom,
+                    sum(l.product_uom_qty / u.factor * u2.factor) as product_uom_qty,
+                    sum(l.qty_delivered / u.factor * u2.factor) as qty_delivered,
+                    sum(l.qty_invoiced / u.factor * u2.factor) as qty_invoiced,
+                    sum(l.qty_to_invoice / u.factor * u2.factor) as qty_to_invoice,
+                    sum(l.price_total) as price_total,
+                    sum(l.price_subtotal) as price_subtotal,
+                    count(*) as nbr,
+                    s.name as name,
+                    s.date_order as date,
+                    s.state as state,
+                    s.partner_id as partner_id,
+                    s.user_id as user_id,
+                    s.company_id as company_id,
+                    extract(epoch from avg(date_trunc('day',s.date_order)-date_trunc('day',s.create_date)))/(24*60*60)::decimal(16,2) as delay,
+                    t.categ_id as categ_id,
+                    s.pricelist_id as pricelist_id,
+                    s.team_id as team_id,
+                    p.product_tmpl_id as product_template_id,
+                    partner.country_id as country_id,
+                    partner.commercial_partner_id as commercial_partner_id,
+                    sum(p.weight * l.product_uom_qty / u.factor * u2.factor) as weight,
+                    sum(p.volume * l.product_uom_qty / u.factor * u2.factor) as volume
+
+                FROM(
+                sale_order_line l
+                  join sale_order s on (l.order_id=s.id)
+                  join res_partner partner on s.partner_id = partner.id
+                    left join product_product p on (l.product_id=p.id)
+                        left join product_template t on (p.product_tmpl_id=t.id)
+                left join product_uom u on (u.id=l.product_uom)
+                left join product_uom u2 on (u2.id=t.uom_id)
+                left join product_pricelist pp on (s.pricelist_id = pp.id)
+                )
+
+                GROUP BY l.id,
+                    l.product_id,
+                    l.order_id,
+                    t.uom_id,
+                    t.categ_id,
+                    s.name,
+                    s.date_order,
+                    s.partner_id,
+                    s.user_id,
+                    s.state,
+                    s.company_id,
+                    s.pricelist_id,
+                    s.team_id,
+                    p.product_tmpl_id,
+                    partner.country_id,
+                    partner.commercial_partner_id
+                )
+
+                UNION ALL
+                (
+                SELECT
+                    (-1) * l.id as id,
+                    l.product_id as product_id,
+                    t.uom_id as product_uom,
+                    sum(l.qty / u.factor * u2.factor) as product_uom_qty,
+                    sum(l.qty / u.factor * u2.factor) as qty_delivered,
+                    sum(l.qty / u.factor * u2.factor) as qty_invoiced,
+                    sum(l.qty / u.factor * u2.factor) as qty_to_invoice,
+                    sum(l.price_unit * l.qty) as price_total,
+                    sum(l.price_unit * l.qty) as price_subtotal,
+                    count(*) as nbr,
+                    s.name as name,
+                    s.date_order as date,
+                    s.state as state,
+                    s.partner_id as partner_id,
+                    s.user_id as user_id,
+                    s.company_id as company_id,
+                    extract(epoch from avg(date_trunc('day',s.date_order)-date_trunc('day',s.create_date)))/(24*60*60)::decimal(16,2) as delay,
+                    t.categ_id as categ_id,
+                    s.pricelist_id as pricelist_id,
+                    tt.crm_team_id as team_id,
+                    p.product_tmpl_id as product_template_id,
+                    partner.country_id as country_id,
+                    partner.commercial_partner_id as commercial_partner_id,
+                    sum(p.weight * l.qty / u.factor * u2.factor) as weight,
+                    sum(p.volume * l.qty / u.factor * u2.factor) as volume
+
+                FROM(
+                pos_order_line l
+                  join pos_order s on (l.order_id=s.id)
+                  join res_partner partner on s.partner_id = partner.id
+                    left join product_product p on (l.product_id=p.id)
+                        left join product_template t on (p.product_tmpl_id=t.id)
+                left join product_uom u on (u.id=t.uom_id)
+                left join product_uom u2 on (u2.id=t.uom_id)
+                left join product_pricelist pp on (s.pricelist_id = pp.id)
+                left join pos_session ss on (s.session_id = ss.id)
+                    left join pos_config tt on (ss.config_id = tt.id)
+
+                )
+
+                GROUP BY l.id,
+                    l.product_id,
+                    l.order_id,
+                    t.uom_id,
+                    t.categ_id,
+                    s.name,
+                    s.date_order,
+                    s.partner_id,
+                    s.user_id,
+                    s.state,
+                    s.company_id,
+                    s.pricelist_id,
+                    tt.crm_team_id,
+                    p.product_tmpl_id,
+                    partner.country_id,
+                    partner.commercial_partner_id
+                )
+                )
+                AS virtual_table
+                GROUP BY x_product_id, x_uom_id, x_name, x_date, x_state, x_partner_id, x_user_id, x_categ_id, x_team_id, x_product_template_id
+            )""" % (model._table))
+      ]]>
+    </field>
+    <field name="crud_model_id" eval="False"/>
+    <field name="help" eval="False"/>
+    <field name="link_field_id" eval="False"/>
+    <field name="model_id" ref="sm_consolidated_sales.model_consolidated_sales"/>
+    <field name="name">[JOS] Consolidated Sales (DO NOT CHANGE)</field>
+    <field name="sequence">5</field>
+    <field name="state">code</field>
+  </record>
+</odoo>
